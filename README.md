@@ -174,6 +174,94 @@ Create a `.env.local` file based on `.env.local.example`:
 
 ---
 
+## API Keys Endpoints
+
+Public endpoint for creating API keys. No authentication required, but rate limited.
+
+> **Note:** You can also request API keys directly from the [ACTA dApp](https://dapp.acta.build/). The dApp provides a user-friendly interface to create and manage your API keys.
+
+### Create API Key
+
+**`POST /public/api-keys`**
+
+Creates an API key (standard role, expires in 6 months). Use the **testnet** or **mainnet** base URL depending on the network you need.
+
+- Testnet: `https://acta.build/api/testnet/public/api-keys`
+- Mainnet: `https://acta.build/api/mainnet/public/api-keys`
+
+**Rate Limit:** 5 requests per minute per IP
+
+**Request Body:**
+
+```json
+{
+  "name": "My API Key",
+  "wallet_address": "G...",
+  "metadata": {
+    "network": "testnet"
+  }
+}
+```
+
+Include `metadata.network`: `"testnet"` or `"mainnet"` to match the API base URL you are calling.
+
+**Response:**
+
+```json
+{
+  "message": "API key created successfully. Save this key - it will not be shown again.",
+  "api_key": "acta_...",
+  "api_key_record": {
+    "id": "uuid",
+    "name": "My API Key",
+    "role": "standard",
+    "is_active": true,
+    "expires_at": "2024-07-01T00:00:00.000Z",
+    "created_at": "2024-01-01T00:00:00.000Z"
+  }
+}
+```
+
+**Example (testnet):**
+
+```bash
+curl -X POST https://acta.build/api/testnet/public/api-keys \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "My Testnet Key",
+    "wallet_address": "G...",
+    "metadata": {
+      "network": "testnet"
+    }
+  }'
+```
+
+**Example (mainnet):**
+
+```bash
+curl -X POST https://acta.build/api/mainnet/public/api-keys \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "My Mainnet Key",
+    "wallet_address": "G...",
+    "metadata": {
+      "network": "mainnet"
+    }
+  }'
+```
+
+### Rate Limiting
+
+- Maximum 5 requests per minute per IP address
+- Rate limit headers included in response:
+  - `X-RateLimit-Limit`: 5
+  - `X-RateLimit-Remaining`: Remaining requests
+  - `X-RateLimit-Reset`: Unix timestamp when limit resets
+
+> **Note:** API key creation via these endpoints is only allowed from `dapp.acta.build` origin. For the easiest experience, we recommend using the [ACTA dApp](https://dapp.acta.build/) to create and manage your API keys.
+
+---
+
 ## Data Flow
 
 ```
